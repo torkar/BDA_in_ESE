@@ -7,4 +7,4 @@ There are two main files in this repository: `missing_data_example.R` and `toy_e
 
 `missing_data_example.R` contains the actual case study (Sect. 3) where we also deal with missing data. In this case the data is not available to the reader, but instead one must buy a license for it at [ISBSG](https://www.isbsg.org).
 
-In addition, the `toy_example.R` has been translated to Rmarkdown (`toy_example.Rmd`), so it can be viewed directly as a html file in `docs/index.html`.
+In addition, the `toy_example.R` has been translated to Rmarkdown (`toy_example.Rmd`), so it can be viewed directly at <https://torkar.github.io/BDA_in_ESE/>.
