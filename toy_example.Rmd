@@ -1,5 +1,10 @@
 ---
 title: "Example from Section 2 in the book Contemporary Empirical Methods in Software Engineering"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 author: "Richard Torkar, Carlo A. Furia, and Robert Feldt"
 date: "4/7/2019"
 output: html_document
@@ -33,7 +38,9 @@ Let us keep only subjects that are >= 18 years of age.
 ```{r}
 d2 <- d[ d$age >= 18 , ]
 ```
+
 Sample randomly for our three priors on $\alpha$, $\beta$, and $\sigma$, and plot the results. Additionally, let us plot the combination of all priors to represent the combined effect of the priors on $\mu$.
+
 ```{r echo=FALSE, warning=FALSE, fig.align='center'}
 p_alpha <- ggplot(data.frame(x = c(100, 250)), aes(x = x)) +
   stat_function(fun = dnorm, args=list(mean=181, sd = 20)) + theme_tufte() +
@@ -70,6 +77,7 @@ p_combo <- ggplot(data.frame(prior_h), aes(x=length)) +  geom_density() + xlim(0
 ggarrange(ggarrange(p_alpha, p_beta, p_cauchy, ncol=3),
           p_combo, nrow=2)
 ```
+
 So, above we see each prior and the combination of the priors for $\mu$. In short, we assume $alpha \sim \mathcal{N}(181,20)$, $\beta \sim \mathcal{N}(0,10)$, and $\sigma \sim \text{Half-Cauchy}(0,10)$.
 
 We can now check for sanity issues concerning our priors. For example, how many people are <53 or >272 cm? Well, it's easy to do now when we have a "posterior", i.e., the answer is `r sum(prior_h < 0.53) / 10000 * 100`% and `r 100 - (sum(prior_h > 2.72) /10000 * 100)`%, respectively.
@@ -79,7 +87,7 @@ In short, we still allow extreme values, but we don't allow too many absurd valu
 \begin{eqnarray}
 \text{height}_i & \sim & \mathcal{N}(\mu_i,\sigma)\\
 \mu_i & \sim & \alpha + \beta_w \times \text{weight}_i\\
-\alpha & \sim & \mathcal(N)(181, 20)\\
+\alpha & \sim & \mathcal{N}(181, 20)\\
 \beta_w & \sim & \mathcal{N}(0, 10)\\
 \sigma & \sim & \text{Half-Cauchy}(0, 10)
 \end{eqnarray}
@@ -104,11 +112,11 @@ model <- ulam(
   ), data = d2, chains = 4, cores = 4, iter = 1e4, control=list(max_treedepth=13)
 )
 ```
-After having run the model we can now look at the posterior. Let's use `precis` from the `rethinking` package, which summarizes the posterior for us.
-```{r precis, echo=FALSE}
+After having run the model we can now look at the posterior. Let's use `precis()` from the `rethinking` package, which summarizes the posterior for us.
+```{r precis, echo=TRUE}
 precis(model)
 ```
-What we see is that the intercept ($\alpha$) is approximately 154 cm (the !Kung people seems to be short), and there's a positive $\beta_w$ parameter, i.e., weight and height goes partly hand in hand.
+What we see is that the intercept ($\alpha$) is approximately `r round(precis(model)$mean[1], digits=2)` cm (the !Kung people seems to be short), and there's a positive $\beta_w$ parameter, i.e., weight and height goes partly hand in hand. In this particular case we're saying that a person 1 kg heavier is expected to be `r round(precis(model)$mean[2], digits=2)` cm taller
 
 Let's now plot our data and the linear prediction we calculated.
 ```{r echo=FALSE, warning=FALSE, fig.align='center'}
@@ -136,7 +144,7 @@ model_brms <- brm(bf(height ~ 1 + weight),
              data=d2, chains=4, cores=4, iter=1e4)
 ```
 With `brms` we can use the `summary()` function to view a summary of the posterior probability distribution. As you see below, these values are very much the same as when we used `rethinking`.
-```{r summary}
+```{r summary, echo=TRUE}
 summary(model_brms)
 ```
 

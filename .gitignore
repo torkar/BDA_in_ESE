@@ -2,6 +2,9 @@
 .Rhistory
 .Rapp.history
 
+# OS X junk
+.DS_store
+
 # Session Data files
 .RData
 
